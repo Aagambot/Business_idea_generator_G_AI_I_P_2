@@ -49,7 +49,7 @@ Follow these steps to get a copy of the project up and running on your local mac
   - Node.js installed on your machine.
   - Python 3.8+ installed on your machine.
   - Vercel CLI installed (`npm i -g vercel`).
-  - An OpenAI API key.
+  - An Google API key.
   - A Clerk account.
 
 ### Installation
@@ -83,7 +83,7 @@ Follow these steps to get a copy of the project up and running on your local mac
         ```
         fastapi
         uvicorn
-        openai
+        google-genai
         fastapi-clerk-auth
         ```
       - Create an `index.py` file inside the `api` folder and populate it with the FastAPI code from the project source.
@@ -97,7 +97,7 @@ Follow these steps to get a copy of the project up and running on your local mac
     <!-- end list -->
 
     ```bash
-    GOOGLE_API_KEY=your_openai_key_here
+    GOOGLE_API_KEY=your_google_api_key_here
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key_here
     CLERK_SECRET_KEY=your_secret_key_here
     CLERK_JWKS_URL=your_jwks_url_here
@@ -128,7 +128,7 @@ Follow these steps to get a copy of the project up and running on your local mac
 2.  **Add environment variables to Vercel:**
 
     ```bash
-    vercel env add OPENAI_API_KEY
+    vercel env add GOOGLE_API_KEY
     vercel env add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
     vercel env add CLERK_SECRET_KEY
     vercel env add CLERK_JWKS_URL
