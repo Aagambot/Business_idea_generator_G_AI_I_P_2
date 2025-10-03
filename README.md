@@ -1,16 +1,5 @@
 # IdeaGen: A Full-Stack AI-Powered SaaS Application
 
-\<p align="center"\>
-\<img src="[https://img.shields.io/badge/Next.js-000000?style=for-the-badge\&logo=next.js\&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/Next.js-000000%3Fstyle%3Dfor-the-badge%26logo%3Dnext.js%26logoColor%3Dwhite)" /\>
-\<img src="[https://img.shields.io/badge/React-20232A?style=for-the-badge\&logo=react\&logoColor=61DAFB](https://www.google.com/search?q=https://img.shields.io/badge/React-20232A%3Fstyle%3Dfor-the-badge%26logo%3Dreact%26logoColor%3D61DAFB)" /\>
-\<img src="[https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge\&logo=typescript\&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/TypeScript-007ACC%3Fstyle%3Dfor-the-badge%26logo%3Dtypescript%26logoColor%3Dwhite)" /\>
-\<img src="[https://img.shields.io/badge/Python-3776AB?style=for-the-badge\&logo=python\&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/Python-3776AB%3Fstyle%3Dfor-the-badge%26logo%3Dpython%26logoColor%3Dwhite)" /\>
-\<img src="[https://img.shields.io/badge/FastAPI-009688?style=for-the-badge\&logo=fastapi\&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/FastAPI-009688%3Fstyle%3Dfor-the-badge%26logo%3Dfastapi%26logoColor%3Dwhite)" /\>
-\<img src="[https://img.shields.io/badge/Vercel-000000?style=for-the-badge\&logo=vercel\&logoColor=white](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)" /\>
-\<img src="[https://img.shields.io/badge/Clerk-000000?style=for-the-badge\&logo=clerk\&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/Clerk-000000%3Fstyle%3Dfor-the-badge%26logo%3Dclerk%26logoColor%3Dwhite)" /\>
-\<img src="[https://img.shields.io/badge/Tailwind\_CSS-38B2AC?style=for-the-badge\&logo=tailwind-css\&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/Tailwind_CSS-38B2AC%3Fstyle%3Dfor-the-badge%26logo%3Dtailwind-css%26logoColor%3Dwhite)" /\>
-\</p\>
-
 IdeaGen is a complete full-stack SaaS application that generates innovative business ideas using AI. This project demonstrates how to build a scalable and secure application with a modern tech stack, including a Next.js frontend, a Python FastAPI backend, and Clerk for authentication and billing.
 
 ## ✨ Features
