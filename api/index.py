@@ -1,99 +1,71 @@
-# import os
-# from fastapi import FastAPI, Depends  # type: ignore
-# from fastapi.responses import StreamingResponse  # type: ignore
-# from fastapi_clerk_auth import ClerkConfig, ClerkHTTPBearer, HTTPAuthorizationCredentials  # type: ignore
-# from google import genai  # type: ignore
-
-# app = FastAPI()
-
-# # Clerk setup
-# clerk_config = ClerkConfig(jwks_url=os.getenv("CLERK_JWKS_URL"))
-# clerk_guard = ClerkHTTPBearer(clerk_config)
-
-# # Gemini client (picks up GEMINI_API_KEY from env in Vercel)
-# client = genai.Client()
-
-# @app.get("/api")
-# def idea(creds: HTTPAuthorizationCredentials = Depends(clerk_guard)):
-#     user_id = creds.decoded["sub"]  # User ID from JWT
-#     # You can use `user_id` to track usage, save ideas, etc.
-
-#     contents = [
-#         {
-#             "parts": [
-#                 {
-#                     "text": "Reply with a new business idea for AI Agents, formatted with headings, sub-headings and bullet points"
-#                 }
-#             ]
-#         }
-#     ]
-#     # Streaming response from Gemini
-#     stream = client.models.stream_generate_content(
-#         model="gemini-2.5-flash",
-#         contents=contents,
-#     )
-
-#     def event_stream():
-#         for event in stream:
-#             if event.type == "token":
-#                 text = event.token
-#                 if text:
-#                     yield f"data: {text}\n\n"
-
-#     return StreamingResponse(event_stream(), media_type="text/event-stream")
-
 import os
-from fastapi import FastAPI, Depends, Request
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi_clerk_auth import ClerkConfig, ClerkHTTPBearer, HTTPAuthorizationCredentials
-import google.generativeai as genai
-
+from fastapi import FastAPI, Depends  # type: ignore
+from fastapi.responses import StreamingResponse  # type: ignore
+from pydantic import BaseModel  # type: ignore
+from fastapi_clerk_auth import ClerkConfig, ClerkHTTPBearer, HTTPAuthorizationCredentials  # type: ignore
+from google import genai  # type: ignore
+ 
 app = FastAPI()
-
-# CORS - works for both local and Vercel
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for simplicity
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Clerk configuration
 clerk_config = ClerkConfig(jwks_url=os.getenv("CLERK_JWKS_URL"))
 clerk_guard = ClerkHTTPBearer(clerk_config)
+client = genai.Client()
 
-# Configure Gemini
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-@app.get("/api")
-async def idea(creds: HTTPAuthorizationCredentials = Depends(clerk_guard)):
-    user_id = creds.decoded["sub"]
-    
-    async def event_stream():
-        try:
-            model = genai.GenerativeModel("gemini-2.0-flash-exp")
-            response = model.generate_content(
-                "Reply with a new business idea for AI Agents, formatted with headings, sub-headings and bullet points",
-                stream=True
-            )
-            
-            for chunk in response:
-                if chunk.text:
-                    # Send text chunks as SSE
-                    text = chunk.text
-                    yield f"data: {text}\n\n"
-                    
-        except Exception as e:
-            yield f"data: Error: {str(e)}\n\n"
-    
-    return StreamingResponse(
-        event_stream(), 
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no"  # Important for Vercel
+class Visit(BaseModel):
+    patient_name: str
+    date_of_visit: str
+    notes: str
+
+
+system_prompt = """
+You are provided with notes written by a doctor from a patient's visit.
+Your job is to summarize the visit for the doctor and provide an email.
+Reply with exactly three sections with the headings:
+### Summary of visit for the doctor's records
+### Next steps for the doctor
+### Draft of email to patient in patient-friendly language
+"""
+
+
+def user_prompt_for(visit: Visit) -> str:
+    return f"""Create the summary, next steps and draft email for:
+Patient Name: {visit.patient_name}
+Date of Visit: {visit.date_of_visit}
+Notes:
+{visit.notes}"""
+
+
+@app.post("/api")
+def consultation_summary(
+    visit: Visit,
+    creds: HTTPAuthorizationCredentials = Depends(clerk_guard),
+):
+    user_id = creds.decoded["sub"]  # Available for tracking/auditing
+
+    user_prompt = user_prompt_for(visit)
+
+    contents = [
+        {
+            "parts": [
+                {"text": f"{system_prompt}\n\n{user_prompt}"}
+            ]
         }
+    ]
+
+    stream = client.models.stream_generate_content(
+        model="gemini-2.5-flash",
+        contents=contents,
     )
+
+    def event_stream():
+        for event in stream:
+            if event.type == "token":
+                text = event.token
+                if text:
+                    lines = text.split("\n")
+                    for line in lines[:-1]:
+                        yield f"data: {line}\n\n"
+                        yield "data:  \n"
+                    yield f"data: {lines[-1]}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
